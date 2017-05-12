@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="Zh-cn">
+<head>
+	<meta charset="UTF-8">
+	<title>remove</title>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap-table.min.css">
+	<style type="text/css">
+		.event{margin-left:15px;}
+	</style>
+</head>
+<body>
+	<div class="btn btn-danger" id="remove">删除<span class="glyphicon glyphicon-remove"></span></div>
+	<table id="goods">
+		<thead>
+			<th data-field="state" data-checkbox="true"></th>
+			<th data-field="goodsname">品名</th>
+	        <th data-field="price">价格</th>
+	        <th data-field="date">日期</th>
+	        <th data-field="action" data-events="actionEvents" data-formatter="actionFormatter" >操作</th>
+		</thead>
+	</table>
+	<!-- js -->
+	<script src="js/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/bootstrap-table.min.js"></script>
+	<script src="js/bootstrap-table-zh-CN.min.js"></script>
+	<!-- My js -->
+	<script type="text/javascript">
+		// 数组删除指定val元素扩展方法
+        Array.prototype.indexOf = function(val) {
+            for (var i = 0; i < this.length; i++) {
+                if (this[i] == val) return i;
+            }
+            return -1;
+        };
+        Array.prototype.remove = function(val) {
+            var index = this.indexOf(val);
+            if (index > -1) {
+                this.splice(index, 1);
+            }
+        };
+
+		// 数据
+		var data = [{"goodsname":"旺旺仙贝","price":"$26","date":"2018-08-10"},
+					{"goodsname":"乐事薯片","price":"$18","date":"2020-10-25"},
+					{"goodsname":"勇闯天涯","price":"$20","date":"2019-01-10"},
+					{"goodsname":"雪花啤酒","price":"$34","date":"2017-05-10"},
+					{"goodsname":"蒙牛优酸乳","price":"$43","date":"2017-12-10"},
+					{"goodsname":"伊利舒化奶","price":"$21","date":"2017-07-10"},
+					{"goodsname":"特仑苏","price":"$12","date":"2017-01-15"},
+					{"goodsname":"蒙牛纯牛奶","price":"$45","date":"2017-01-31"},
+					{"goodsname":"统一冰红茶","price":"$63","date":"2017-05-20"},
+					{"goodsname":"百事可乐","price":"$25","date":"2017-09-20"},
+					{"goodsname":"农夫山泉","price":"$86","date":"2017-11-25"},
+					{"goodsname":"红牛","price":"$89","date":"2017-11-11"},
+					{"goodsname":"冰糖雪梨","price":"$67","date":"2017-04-09"}];
+		// 操作格式化
+		function actionFormatter(){
+			return  [
+				        '<a class="like event" href="javascript:void(0)" title="收藏">',
+				        '<i class="glyphicon glyphicon-heart"></i>',
+				        '</a>',
+				        '<a class="edit event" href="javascript:void(0)" title="修改">',
+				        '<i class="glyphicon glyphicon-edit"></i>',
+				        '</a>',
+				        '<a class="remove event" href="javascript:void(0)" title="删除">',
+				        '<i class="glyphicon glyphicon-remove"></i>',
+				        '</a>'
+				    ].join('');
+		}
+		// 事件
+		window.actionEvents = {
+			'click .like': function (e, value, row, index) {
+			    alert("当前选中第"+(index+1)+"行\n选中商品信息：\n品名："+row.goodsname+"\n价格："+row.price+"\n效期："+row.date);
+			},
+			'click .edit': function (e, value, row, index) {
+				$("#goods").children("tbody").children("tr").removeClass("danger");
+			    $("#goods").children("tbody").children("tr").eq(index).addClass('danger');
+			    alert("选中商品信息：\n品名："+row.goodsname+"\n价格："+row.price+"\n效期："+row.date);
+			},
+			'click .remove': function (e, value, row, index) {
+				$(this).parent("td").parent("tr").remove();
+			}
+		};
+		// 加载数据
+		$(function(){
+			$("#goods").bootstrapTable({
+				data:data
+			});
+		});
+		// 用checkbox删除
+		// 单选checkbox 全选checkbox 事件
+		$("#goods")
+		.on("check.bs.table",function(e,row,ele){
+			ele.parent("td").parent("tr").addClass("IsSign");
+		})
+		.on("uncheck.bs.table",function(e,row,ele){
+			ele.parent("td").parent("tr").removeClass("IsSign");
+		})
+		.on("check-all.bs.table",function(e,dataArr){
+            $("#goods").children("tbody").children("tr").removeClass("IsSign");
+            $("#goods").children("tbody").children("tr").addClass("IsSign");
+		})
+		.on("uncheck-all.bs.table",function(e,dataArr){
+            $("#goods").children("tbody").children("tr").removeClass("IsSign");
+		});
+		// 删除选中行
+		$("#remove").click(function(){
+            var SignArr = $(".IsSign");
+            for(var i = 0; i < SignArr.length; i++){
+                SignArr[i].remove();
+            }
+		});
+	</script>
+</body>
+</html>

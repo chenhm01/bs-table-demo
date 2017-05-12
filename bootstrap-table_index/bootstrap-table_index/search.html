@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="Zh-cn">
+<head>
+	<meta charset="UTF-8">
+	<title>search</title>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap-table.min.css">
+	<style type="text/css">
+		#toolbar input{
+			float:left;max-width:32%;margin-left:1%;
+		}
+	</style>
+</head>
+<body>
+	<div id="toolbar" class="btn-group">
+	    <input type="text" id="goodsname" class="form-control" placeholder="搜索:商品名称">
+	    <input type="text" id="price" class="form-control" placeholder="搜索:商品价格">
+	    <input type="text" id="date" class="form-control" placeholder="搜索:商品效期">
+	</div>
+	<table id="goods"
+		data-pagination="true"
+       	data-show-toggle="true"
+       	data-show-columns="true"
+       	data-toolbar="#toolbar">
+		<thead>
+			<tr>
+				<th data-field="state" data-checkbox="true"></th>
+				<th data-sortable="true" data-field="goodsName">商品名称</th>
+				<th data-sortable="true" data-field="price">价格</th>
+				<th data-field="date">日期</th>
+			</tr>
+		</thead>
+	</table>
+	<!-- js -->
+	<script src="js/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/bootstrap-table.min.js"></script>
+	<script src="js/bootstrap-table-zh-CN.min.js"></script>
+	<!-- My js -->
+	<script type="text/javascript">
+		/*数据*/
+		var data = [{"goodsName":"旺旺仙贝","price":"$26","date":"2018-08-10"},
+					{"goodsName":"乐事薯片","price":"$18","date":"2020-10-25"},
+					{"goodsName":"勇闯天涯","price":"$20","date":"2019-01-10"},
+					{"goodsName":"雪花啤酒","price":"$34","date":"2017-05-10"},
+					{"goodsName":"蒙牛优酸乳","price":"$43","date":"2017-12-10"},
+					{"goodsName":"伊利舒化奶","price":"$21","date":"2017-07-10"},
+					{"goodsName":"特仑苏","price":"$12","date":"2017-01-15"},
+					{"goodsName":"蒙牛纯牛奶","price":"$45","date":"2017-01-31"},
+					{"goodsName":"统一冰红茶","price":"$63","date":"2017-05-20"},
+					{"goodsName":"百事可乐","price":"$25","date":"2017-09-20"},
+					{"goodsName":"农夫山泉","price":"$86","date":"2017-11-25"},
+					{"goodsName":"红牛","price":"$89","date":"2017-11-11"},
+					{"goodsName":"冰糖雪梨","price":"$67","date":"2017-04-09"}];
+		$(function(){
+			/*初始化表格*/
+			$("#goods").bootstrapTable({
+				data:data
+			});
+			// 搜索
+		});
+	</script>
+</body>
+</html>

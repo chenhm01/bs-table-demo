@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="Zh-cn">
+<head>
+	<meta charset="UTF-8">
+	<title>find</title>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap-table.min.css">
+</head>
+<body>
+	<div class="form-inline" id="toolbar">
+	    <button type="button" class="btn btn-default s-top">
+	        查看首行
+	    </button>
+	    <button type="button" class="btn btn-default s-btn">
+	        查看第：
+	    </button>
+	        <input type="number" class="form-control s-row" placeholder="查看行数" min="1">
+	    	<span>行</span>
+	    <button type="button" class="btn btn-default s-btm">
+	        查看尾行
+	    </button>
+	    <button type="button" class="btn btn-default s-clear">
+	        取消焦点行
+	    </button>
+	</div>
+	<table id="goods"></table>
+	<!-- js -->
+	<script src="js/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/bootstrap-table.min.js"></script>
+	<script src="js/bootstrap-table-zh-CN.min.js"></script>
+	<!-- My js -->
+	<script type="text/javascript">
+		// 列头
+		var col = [{checkbox:true},				// 选择列
+				   {field:'goodsName',title:'商品名称',switchable:false},	// 当前列不可被隐藏
+				   {field:'price',title:'价格',formatter:'priceFormatter',sortable:true},	// 当前列可排序，当前列格式化
+				   {field:'date',title:'效期',visible:false}];	// 当前列默认被隐藏
+		// 格式化列
+		function priceFormatter(val,row,index){
+			return '<span style="color:orange">' + val + '</span>';
+		}
+		// 数据
+		var data = [{"goodsName":"旺旺仙贝","price":"$26","date":"2018-08-10"},
+					{"goodsName":"乐事薯片","price":"$18","date":"2020-10-25"},
+					{"goodsName":"勇闯天涯","price":"$20","date":"2019-01-10"},
+					{"goodsName":"雪花啤酒","price":"$34","date":"2017-05-10"},
+					{"goodsName":"蒙牛优酸乳","price":"$43","date":"2017-12-10"},
+					{"goodsName":"伊利舒化奶","price":"$21","date":"2017-07-10"},
+					{"goodsName":"特仑苏","price":"$12","date":"2017-01-15"},
+					{"goodsName":"蒙牛纯牛奶","price":"$45","date":"2017-01-31"},
+					{"goodsName":"统一冰红茶","price":"$63","date":"2017-05-20"},
+					{"goodsName":"百事可乐","price":"$25","date":"2017-09-20"},
+					{"goodsName":"农夫山泉","price":"$86","date":"2017-11-25"},
+					{"goodsName":"红牛","price":"$89","date":"2017-11-11"},
+					{"goodsName":"冰糖雪梨","price":"$67","date":"2017-04-09"}];
+		// 初始化数据
+		$("#goods").bootstrapTable({
+			//height:300,			//定义table高度
+			toolbar:"#toolbar",	//绑定自定义工具栏
+			detailView:"true",	//是否显示父子表
+			sortOrder:"asc",	//table默认升序
+			showColumns:true,	//显示隐藏列
+			search:true,		//搜索框
+			pagination:true,	//分页
+			pageList:"[4,6,8,10,15]",	//每页显示条数
+			showToggle:true,	//视图切换
+			showRefresh:true,	//刷新
+			columns:col,		//定义列
+			data:data, 			//绑定数据
+            /* onExpandRow加载子table数据 */
+            onExpandRow: function (index, row, $detail) {
+            	$detail.html('<table></table>').find('table').bootstrapTable({
+            		columns:col,		//定义列
+					data:data, 			//绑定数据
+					detailView:"true",	//是否显示父子表
+					onExpandRow: function (index, row, $detail) {
+						$detail.html('<h1>别点了，没有啦！</h1>');
+					}
+            	});
+            }
+		});
+		$(".s-top").click(function () {
+			$('#goods').children("tbody").children('.danger').removeClass('danger');	//先清空所有焦点样式
+	        $('#goods').bootstrapTable('scrollTo', 0);	//滚动到首行
+	        $('#goods').children("tbody").children('tr').eq(0).addClass('danger');	//焦点行变色
+	    });
+	    $(".s-btm").click(function () {
+	    	$('#goods').children("tbody").children('.danger').removeClass('danger');	//先清空所有焦点样式
+	        $('#goods').bootstrapTable('scrollTo', 'bottom');	//滚动到底行
+	        $('#goods').children("tbody").children('tr').last().addClass('danger');	//焦点行变色
+	    });
+	    $(".s-btn").click(function () {
+	    	$('#goods').children("tbody").children('.danger').removeClass('danger');	//先清空所有焦点样式
+	    	var index = $(".s-row").val() - 1;				//获取查看行下标(这里的值是行数，下标比行数小1)
+	    	var sTop = 0;									//滚动高度
+	    	$('#goods').children("tbody").children('tr').eq(index).addClass('danger');	//焦点行变色
+	    	//累加目标行之前行的高度，获取目标行到列头的高度
+	    	$('#goods').children("tbody").children('tr').each(function(item){
+	    		if(item < index){
+	    			sTop += $(this).height();
+	    		}
+	    	});
+	    	$('#goods').bootstrapTable('scrollTo', sTop);	//滚动到目标行
+	    });
+	    $(".s-clear").click(function(){
+	    	$('#goods').children("tbody").children('.danger').removeClass('danger');	//先清空所有焦点样式
+	    	$('#goods').bootstrapTable('scrollTo', 0);	//滚动到首行
+	    });
+	</script>
+</body>
+</html>

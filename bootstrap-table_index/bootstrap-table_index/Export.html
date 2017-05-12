@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="Zh-cn">
+<head>
+	<meta charset="UTF-8">
+	<title>Export</title>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap-table.min.css">
+</head>
+<body>
+	<div id="toolbar">
+		<select class="form-control">
+		    <option value="all">导出全部</option>
+		    <option value="selected">导出选中行</option>
+		</select>
+		<button id="excel" class="btn btn-default">导出Excel</button>
+		<button id="txt" class="btn btn-default">导出TXT</button>
+		<button id="sql" class="btn btn-default">导出SQL</button>
+		<button id="json" class="btn btn-default">导出JSON</button>
+	</div>
+	<table id="goods"></table>
+	<!-- js -->
+	<script src="js/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/bootstrap-table.min.js"></script>
+	<script src="js/bootstrap-table-zh-CN.min.js"></script>
+	<!-- 导出专用js -->
+	<script src="js/tableExport.js"></script>
+	<script src="js/bootstrap-table-export.js"></script>
+	<!-- My js -->
+	<script type="text/javascript">
+		// 列头
+		var col = [{checkbox:true},				// 选择列
+				   {field:'goodsName',title:'商品名称'},	// 当前列不可被隐藏
+				   {field:'price',title:'价格'},	// 当前列可排序，当前列格式化
+				   {field:'date',title:'效期'}];	// 当前列默认被隐藏
+		// 数据
+		var data = [{"goodsName":"旺旺仙贝","price":"$26","date":"2018-08-10"},
+					{"goodsName":"乐事薯片","price":"$18","date":"2020-10-25"},
+					{"goodsName":"勇闯天涯","price":"$20","date":"2019-01-10"},
+					{"goodsName":"雪花啤酒","price":"$34","date":"2017-05-10"},
+					{"goodsName":"蒙牛优酸乳","price":"$43","date":"2017-12-10"},
+					{"goodsName":"伊利舒化奶","price":"$21","date":"2017-07-10"},
+					{"goodsName":"特仑苏","price":"$12","date":"2017-01-15"},
+					{"goodsName":"蒙牛纯牛奶","price":"$45","date":"2017-01-31"},
+					{"goodsName":"统一冰红茶","price":"$63","date":"2017-05-20"},
+					{"goodsName":"百事可乐","price":"$25","date":"2017-09-20"},
+					{"goodsName":"农夫山泉","price":"$86","date":"2017-11-25"},
+					{"goodsName":"红牛","price":"$89","date":"2017-11-11"},
+					{"goodsName":"冰糖雪梨","price":"$67","date":"2017-04-09"}];
+		// 初始化数据
+		$("#goods").bootstrapTable({
+			toolbar:"#toolbar",	//绑定自定义工具栏
+			/*---这些属性只有在引用tableExport.js和table-export.js才有----*/
+			showExport:"true",	//导出数据
+			exportTypes:"['excel','json','txt','xml','csv','sql']",//设置导出文件类型
+			//导出文件类型仅支持excel json txt xml csv sql pdf(注意导出pdf需要引用jspdf.plugin.autotable.js和jspdf.min.js)
+			//demo地址http://jsfiddle.net/marcelk/6gd9w79u/
+			/*------------------------------------------------------------*/
+			pagination:true,	//分页
+			iconSize:'lg',			//图标尺寸 lg大号 md中号 sm小号 xs很小
+			pageList:"[4,6,8,10,15]",	//每页显示条数
+			showToggle:true,	//视图切换
+			columns:col,		//定义列
+			data:data 			//绑定数据
+		});
+		$("#toolbar").children("select").change(function(){	//select值改变事件
+			$("#goods").bootstrapTable("refreshOptions",{	
+			//refresh Options翻译：更新选项，更新导出数据内容
+				exportDataType: $(this).val()		
+				//export Data Type翻译：导出数据类型，更新导出数据类型为select的值
+			});
+		});
+		$("#excel").click(function(){$("#goods").tableExport( { type:'excel', escape:false } ); });     //escape 是否转义HTML字符串
+		$("#txt").click(function(){$("#goods").tableExport( { type:'txt', escape:false } ); });
+		$("#sql").click(function(){$("#goods").tableExport( { type:'sql', escape:false } ); });
+		$("#json").click(function(){$("#goods").tableExport( { type:'json', escape:false } ); });
+	</script>
+</body>
+</html>

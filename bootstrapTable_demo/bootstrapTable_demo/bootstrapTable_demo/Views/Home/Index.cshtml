@@ -1,0 +1,286 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="Zh-cn">
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <link href="~/Common/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Common/css/bootstrap-table.min.css" rel="stylesheet" />
+    <link href="~/Common/css/bootstrap-editable.css" rel="stylesheet" /> <!--edit专用-->
+</head>
+<body>
+    <div id="toolbar">
+        <select class="form-control" id="Export">
+            <option value="basic">导出当前页</option>
+            <option value="all">导出全部</option>
+            <option value="selected">导出选中行</option>
+        </select>
+        <div class="btn btn-danger" id="remove">删除<span class="glyphicon glyphicon-remove"></span></div>
+    </div>
+    <table id="table"></table>
+    <!--引用js-->
+    <script src="~/JavaScript/jquery.min.js"></script>
+    <script src="~/JavaScript/bootstrap.min.js"></script>
+    <script src="~/JavaScript/bootstrap-table.js"></script>
+    <script src="~/JavaScript/bootstrap-table-zh-CN.min.js"></script>
+    <!--edit专用(修改)-->
+    <script src="~/JavaScript/bootstrap-editable.js"></script>
+    <script src="~/JavaScript/bootstrap-table-editable.js"></script>
+    <!--export专用(导出)-->
+    <script src="~/JavaScript/tableExport.js"></script>
+    <script src="~/JavaScript/bootstrap-table-export.js"></script>
+    <!-- js -->
+    <script type="text/javascript">
+    // 定义列
+        var col = [{ field: 'state',checkbox:true },
+                { field: 'goodsName', title: '商品名称'},
+                { field: 'price', title: '价格', sortable:true,editable: { type: 'text', mode: 'inline' } },
+                { field: 'date', title: '效期', sortable:true,editable: { type: 'text', mode: 'inline' } },
+                { field: 'action', title: '操作', events: 'actionEvents', formatter: 'actionFormatter' }];
+    // 数据
+        var data = [{ 'goodsName': '旺旺仙贝', 'price': '26', 'date': '2018-08-10' },
+                    { 'goodsName': '乐事薯片', 'price': '18', 'date': '2020-10-25' },
+                    { 'goodsName': '勇闯天涯', 'price': '20', 'date': '2019-01-10' },
+                    { 'goodsName': '雪花啤酒', 'price': '34', 'date': '2017-05-10' },
+                    { 'goodsName': '蒙牛优酸乳', 'price': '43', 'date': '2017-12-10' },
+                    { 'goodsName': '伊利舒化奶', 'price': '21', 'date': '2017-07-10' },
+                    { 'goodsName': '特仑苏', 'price': '12', 'date': '2017-01-15' },
+                    { 'goodsName': '蒙牛纯牛奶', 'price': '45', 'date': '2017-01-31' },
+                    { 'goodsName': '统一冰红茶', 'price': '63', 'date': '2017-05-20' },
+                    { 'goodsName': '百事可乐', 'price': '25', 'date': '2017-09-20' },
+                    { 'goodsName': '农夫山泉', 'price': '86', 'date': '2017-11-25' },
+                    { 'goodsName': '红牛', 'price': '89', 'date': '2017-11-11' },
+                    { 'goodsName': '阿萨姆奶茶', 'price': '34', 'date': '2021-03-19' },
+                    { 'goodsName': '统一老坛酸菜', 'price': '74', 'date': '2017-04-09' },
+                    { 'goodsName': '康师傅红烧牛肉面', 'price': '51', 'date': '2017-04-09' },
+                    { 'goodsName': '卫龙辣条', 'price': '43', 'date': '2017-04-09' },
+                    { 'goodsName': '鲜橙多', 'price': '29', 'date': '2017-04-09' }];
+    // 操作格式化
+    function actionFormatter() {
+        return [
+                '<a class="edit event" href="javascript:void(0)" title="查看">',
+                '<i class="glyphicon glyphicon-edit"></i> 查看',
+                '</a>',
+                '<a class="remove event" href="javascript:void(0)" title="删除">',
+                '<i class="glyphicon glyphicon-remove"></i> 删除',
+                '</a>'
+                ].join('');
+    }
+    // 选择导出数据内容
+    $("#Export").change(function () {
+        $("#table").bootstrapTable("refreshOptions", {
+            exportDataType: $(this).val()
+        });
+    });
+    // 删除 查看 事件
+    window.actionEvents = {
+        'click .edit': function (e, value, row, index) {
+            $("#table").children("tbody").children("tr").removeClass("danger");
+            $("#table").children("tbody").children("tr").eq(index).addClass('danger');
+            alert("选中商品信息：\n品名：" + row.goodsname + "\n价格：" + row.price + "\n效期：" + row.date);
+        },
+        'click .remove': function (e, value, row, index) {
+            $(this).parent("td").parent("tr").remove();
+        }
+    };
+    // checkbox删除
+        $("#table")
+		.on("check.bs.table", function (e, row, ele) {
+		    ele.parent("td").parent("tr").addClass("IsSign");
+		})
+		.on("uncheck.bs.table", function (e, row, ele) {
+		    ele.parent("td").parent("tr").removeClass("IsSign");
+		})
+		.on("check-all.bs.table", function (e, dataArr) {
+		    $("#table").children("tbody").children("tr").removeClass("IsSign");
+		    $("#table").children("tbody").children("tr").addClass("IsSign");
+		})
+		.on("uncheck-all.bs.table", function (e, dataArr) {
+		    $("#toolbar").children("tbody").children("tr").removeClass("IsSign");
+		});
+    // 删除选中行
+    $("#remove").click(function () {
+        var SignArr = $(".IsSign");
+        for (var i = 0; i < SignArr.length; i++) {
+            SignArr[i].remove();
+        }
+    });
+    // 子项表格列信息
+    var childCol = [{ field: 'state', title: '库存状态', sortable:true, editable: { type: 'text', mode: 'inline' } },
+            { field: 'stock', title: '库存', sortable:true, editable: { type: 'text', mode: 'inline' } },
+            { field: 'warehouse', title: '仓库地址', editable: { type: 'text', mode: 'inline' } }];
+    // child table 函数
+    function childTable($ele,dataArr) {
+        $ele.html("<table></table>").find('table').bootstrapTable({
+            singleSelect: true,
+            sortOrder: "asc",
+            columns: childCol,
+            showToggle: true,
+            showExport: "true",
+            exportTypes: "['excel']",
+            showColumns: true,
+            detailView: "true",
+            data: dataArr,
+            // 定义子项
+            onExpandRow: function (index, row, $detail) {
+                switch (row.state) {
+                    case '有货':
+                        $detail.html("<p class='text-success'>" + row.warehouse + "仓库存量充足，无需补货！</p>");
+                        break;
+                    case '缺货':
+                        $detail.html("<p class='text-danger'>" + row.warehouse + "仓库存量不足，请补货！</p>");
+                        break;
+                }
+            }
+        });
+    }
+    // 初始化table
+    $(function () {
+        $('#table').bootstrapTable({
+            toolbar: "#toolbar",    //绑定自定义工具栏
+            showExport: "true",	    //导出数据
+            sortOrder: "asc",	    //排序方式
+            striped: true,          //各行变色
+            exportTypes: "['excel','json','txt','xml','csv','sql']",    //设置导出文件类型
+            iconSize: 'md',		    //图标尺寸
+            pagination: true,       //分页
+            pageList: "[4,6,8,10,15]",	    //每页显示条数
+            search: true,           //搜索
+            showToggle: true,       //视图切换
+            showColumns: true,      //筛选列
+            columns: col,           //列信息
+            data: data,              //数据
+            detailView: "true",	    //是否显示父子表
+            // 定义子项
+            onExpandRow: function (index, row, $detail) {
+                switch (row.goodsName) {
+                    case '旺旺仙贝':
+                        var data = [{ 'state': '有货', 'stock': '12', 'warehouse': '武汉仓库' },
+                                    { 'state': '缺货', 'stock': '0', 'warehouse': '黄冈仓库' },
+                                    { 'state': '缺货', 'stock': '0', 'warehouse': '襄樊仓库' },
+                                    { 'state': '有货', 'stock': '100', 'warehouse': '荆州仓库' }];
+                        childTable($detail,data);
+                        break;
+                    case '乐事薯片':
+                        var data = [{ 'state': '缺货', 'stock': '0', 'warehouse': '武汉仓库' },
+                                    { 'state': '缺货', 'stock': '0', 'warehouse': '黄冈仓库' },
+                                    { 'state': '缺货', 'stock': '0', 'warehouse': '襄樊仓库' },
+                                    { 'state': '缺货', 'stock': '0', 'warehouse': '荆州仓库' }];
+                        childTable($detail, data);
+                        break;
+                    case '勇闯天涯':
+                        var data = [{ 'state': '有货', 'stock': '50', 'warehouse': '武汉仓库' },
+                                    { 'state': '有货', 'stock': '200', 'warehouse': '黄冈仓库' },
+                                    { 'state': '缺货', 'stock': '0', 'warehouse': '襄樊仓库' },
+                                    { 'state': '有货', 'stock': '70', 'warehouse': '荆州仓库' }];
+                        childTable($detail, data);
+                        break;
+                    case '雪花啤酒':
+                        var data = [{ 'state': '有货', 'stock': '980', 'warehouse': '武汉仓库' },
+                                    { 'state': '有货', 'stock': '1030', 'warehouse': '黄冈仓库' },
+                                    { 'state': '有货', 'stock': '2000', 'warehouse': '襄樊仓库' },
+                                    { 'state': '有货', 'stock': '1500', 'warehouse': '荆州仓库' }];
+                        childTable($detail, data);
+                        break;
+                    case '蒙牛优酸乳':
+                        var data = [{ 'state': '缺货', 'stock': '0', 'warehouse': '武汉仓库' },
+                                    { 'state': '缺货', 'stock': '0', 'warehouse': '黄冈仓库' },
+                                    { 'state': '缺货', 'stock': '0', 'warehouse': '襄樊仓库' },
+                                    { 'state': '有货', 'stock': '60', 'warehouse': '荆州仓库' }];
+                        childTable($detail, data);
+                        break;
+                    case '伊利舒化奶':
+                        var data = [{ 'state': '有货', 'stock': '60', 'warehouse': '武汉仓库' },
+                                    { 'state': '有货', 'stock': '50', 'warehouse': '黄冈仓库' },
+                                    { 'state': '有货', 'stock': '85', 'warehouse': '襄樊仓库' },
+                                    { 'state': '有货', 'stock': '150', 'warehouse': '荆州仓库' }];
+                        childTable($detail, data);
+                        break;
+                    case '特仑苏':
+                        var data = [{ 'state': '有货', 'stock': '75', 'warehouse': '武汉仓库' },
+                                    { 'state': '缺货', 'stock': '0', 'warehouse': '黄冈仓库' },
+                                    { 'state': '有货', 'stock': '130', 'warehouse': '襄樊仓库' },
+                                    { 'state': '有货', 'stock': '96', 'warehouse': '荆州仓库' }];
+                        childTable($detail, data);
+                        break;
+                    case '蒙牛纯牛奶':
+                        var data = [{ 'state': '缺货', 'stock': '0', 'warehouse': '武汉仓库' },
+                                    { 'state': '缺货', 'stock': '0', 'warehouse': '黄冈仓库' },
+                                    { 'state': '有货', 'stock': '50', 'warehouse': '襄樊仓库' },
+                                    { 'state': '有货', 'stock': '20', 'warehouse': '荆州仓库' }];
+                        childTable($detail, data);
+                        break;
+                    case '统一冰红茶':
+                        var data = [{ 'state': '缺货', 'stock': '0', 'warehouse': '武汉仓库' },
+                                    { 'state': '缺货', 'stock': '0', 'warehouse': '黄冈仓库' },
+                                    { 'state': '缺货', 'stock': '0', 'warehouse': '襄樊仓库' },
+                                    { 'state': '缺货', 'stock': '0', 'warehouse': '荆州仓库' }];
+                        childTable($detail, data);
+                        break;
+                    case '百事可乐':
+                        var data = [{ 'state': '有货', 'stock': '150', 'warehouse': '武汉仓库' },
+                                    { 'state': '缺货', 'stock': '0', 'warehouse': '黄冈仓库' },
+                                    { 'state': '缺货', 'stock': '0', 'warehouse': '襄樊仓库' },
+                                    { 'state': '缺货', 'stock': '0', 'warehouse': '荆州仓库' }];
+                        childTable($detail, data);
+                        break;
+                    case '农夫山泉':
+                        var data = [{ 'state': '缺货', 'stock': '0', 'warehouse': '武汉仓库' },
+                                    { 'state': '有货', 'stock': '140', 'warehouse': '黄冈仓库' },
+                                    { 'state': '有货', 'stock': '87', 'warehouse': '襄樊仓库' },
+                                    { 'state': '有货', 'stock': '74', 'warehouse': '荆州仓库' }];
+                        childTable($detail, data);
+                        break;
+                    case '红牛':
+                        var data = [{ 'state': '缺货', 'stock': '0', 'warehouse': '武汉仓库' },
+                                    { 'state': '缺货', 'stock': '0', 'warehouse': '黄冈仓库' },
+                                    { 'state': '缺货', 'stock': '0', 'warehouse': '襄樊仓库' },
+                                    { 'state': '缺货', 'stock': '0', 'warehouse': '荆州仓库' }];
+                        childTable($detail, data);
+                        break;
+                    case '阿萨姆奶茶':
+                        var data = [{ 'state': '有货', 'stock': '16', 'warehouse': '武汉仓库' },
+                                    { 'state': '有货', 'stock': '17', 'warehouse': '黄冈仓库' },
+                                    { 'state': '有货', 'stock': '23', 'warehouse': '襄樊仓库' },
+                                    { 'state': '有货', 'stock': '34', 'warehouse': '荆州仓库' }];
+                        childTable($detail, data);
+                        break;
+                    case '统一老坛酸菜':
+                        var data = [{ 'state': '缺货', 'stock': '0', 'warehouse': '武汉仓库' },
+                                    { 'state': '缺货', 'stock': '0', 'warehouse': '黄冈仓库' },
+                                    { 'state': '缺货', 'stock': '0', 'warehouse': '襄樊仓库' },
+                                    { 'state': '缺货', 'stock': '0', 'warehouse': '荆州仓库' }];
+                        childTable($detail, data);
+                        break;
+                    case '康师傅红烧牛肉面':
+                        var data = [{ 'state': '有货', 'stock': '85', 'warehouse': '武汉仓库' },
+                                    { 'state': '有货', 'stock': '60', 'warehouse': '黄冈仓库' },
+                                    { 'state': '缺货', 'stock': '0', 'warehouse': '襄樊仓库' },
+                                    { 'state': '有货', 'stock': '100', 'warehouse': '荆州仓库' }];
+                        childTable($detail, data);
+                        break;
+                    case '卫龙辣条':
+                        var data = [{ 'state': '有货', 'stock': '22', 'warehouse': '武汉仓库' },
+                                    { 'state': '有货', 'stock': '81', 'warehouse': '黄冈仓库' },
+                                    { 'state': '有货', 'stock': '61', 'warehouse': '襄樊仓库' },
+                                    { 'state': '有货', 'stock': '52', 'warehouse': '荆州仓库' }];
+                        childTable($detail, data);
+                        break;
+                    case '鲜橙多':
+                        var data = [{ 'state': '有货', 'stock': '26', 'warehouse': '武汉仓库' },
+                                    { 'state': '有货', 'stock': '84', 'warehouse': '黄冈仓库' },
+                                    { 'state': '缺货', 'stock': '0', 'warehouse': '襄樊仓库' },
+                                    { 'state': '有货', 'stock': '100', 'warehouse': '荆州仓库' }];
+                        childTable($detail, data);
+                        break;
+                }
+            }
+        });
+    });
+    // 商品名称搜索
+    
+    </script>
+</body>
+</html>
